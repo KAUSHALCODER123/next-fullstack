@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from '@/lib/dbConnect';
 import { ObjectId } from 'mongodb';
 
@@ -7,9 +7,9 @@ interface UpdateBody {
   gamesPlayed: number;
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const db = await connectToDatabase();
-
+  
   try {
     const body: UpdateBody = await req.json();
     const { Score, gamesPlayed } = body;
