@@ -3,16 +3,24 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Hero from "@/app/component/hero";
 import Image from "next/image";
+
+interface Teacher {
+  _id: string;
+  name: string;
+  Score: number;
+  gamesPlayed: number;
+}
+
 export default function Home() {
   const { data: session, status } = useSession();
 
-  const [teachers, setTeachers] = useState([]);
-  const [teacherIndices, setTeacherIndices] = useState([0, 1]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [teacherIndices, setTeacherIndices] = useState<[number, number]>([0, 1]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Initialize clickCount from localStorage or start at 0
-  const [clickCount, setClickCount] = useState(() => {
+  const [clickCount, setClickCount] = useState<number>(() => {
     if (typeof window !== 'undefined') {
       const savedClickCount = localStorage.getItem('clickCount');
       return savedClickCount ? parseInt(savedClickCount, 10) : 0;
@@ -29,7 +37,7 @@ export default function Home() {
         }
         const data = await response.json();
         setTeachers(data.data || []);
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message);
       } finally {
         setLoading(false);
@@ -41,17 +49,23 @@ export default function Home() {
   // Save clickCount to localStorage whenever it changes
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('clickCount', clickCount);
+      localStorage.setItem('clickCount', clickCount.toString());
     }
   }, [clickCount]);
 
-  const calculateElo = (ratingA, ratingB, scoreA, gamesPlayedA, kBase = 32) => {
+  const calculateElo = (
+    ratingA: number,
+    ratingB: number,
+    scoreA: number,
+    gamesPlayedA: number,
+    kBase: number = 32
+  ): number => {
     const k = kBase / (1 + Math.log10(1 + gamesPlayedA));
     const expectedScoreA = 1 / (1 + 10 ** ((ratingB - ratingA) / 400));
     return ratingA + k * (scoreA - expectedScoreA);
   };
 
-  const handleRank = async (winnerIndex, loserIndex) => {
+  const handleRank = async (winnerIndex: number, loserIndex: number) => {
     if (clickCount >= 10) {
       return; // Stop ranking when click count exceeds the limit
     }
@@ -81,7 +95,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Score: loser.Score, gamesPlayed: loser.gamesPlayed }),
       });
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     }
 
@@ -111,12 +125,11 @@ export default function Home() {
   }
 
   // Conditionally render based on clickCount
-  if (clickCount == 10) {
+  if (clickCount === 10) {
     return (
       <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
         <h1>Welcome {session?.user?.name}</h1>
-      
-        <Image src='/vote.png' width='300' height='500' alt='Vote' />
+        <Image src='/vote.png' width={300} height={500} alt='Vote' />
         <p>You have reached the maximum of 10 clicks this session!</p>
       </main>
     );
@@ -125,9 +138,8 @@ export default function Home() {
   return (
     <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
       <p className="text-xl sm:text-2xl text-center">Welcome {session?.user?.email}</p>
-     
-      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10 -clickCount}</p>
- 
+      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10 - clickCount}</p>
+
       <Hero
         session={session}
         teacher1={teacher1}
@@ -143,7 +155,6 @@ export default function Home() {
           <tr>
             <th className="w-1/2 px-4 sm:px-6 py-2 sm:py-3 text-base sm:text-lg">Name</th>
             <th className="w-1/2 px-4 sm:px-6 py-2 sm:py-3 text-base sm:text-lg">Score</th>
-           
           </tr>
         </thead>
         <tbody>
@@ -151,7 +162,6 @@ export default function Home() {
             <tr key={teacher._id} className={`text-center ${index % 2 === 0 ? 'bg-gray-700' : 'bg-gray-800'}`}>
               <td className="border border-gray-700 px-4 sm:px-6 py-2 sm:py-4 text-sm sm:text-lg">{teacher.name}</td>
               <td className="border border-gray-700 px-4 sm:px-6 py-2 sm:py-4 text-sm sm:text-lg">{Math.ceil(teacher.Score)}</td>
-             
             </tr>
           ))}
         </tbody>
