@@ -1,8 +1,7 @@
-'use client'
+'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image'; // Ensure you have this import if you're using Next.js
 import Hero from '@/app/component/hero'; // Adjust the path based on your project structure
-
 
 interface Teacher {
   _id: string;
@@ -35,11 +34,14 @@ export default function Home() {
           throw new Error("Failed to fetch teachers");
         }
         const data = await response.json();
-        setTeachers(data.data || []);
-        // Initialize available indices when teachers are fetched
-        const indices = Array.from({ length: data.data.length }, (_, i) => i);
+        const teachersData = data.data || [];
 
-        setAvailableIndices(shuffleArray(indices));
+        setTeachers(teachersData);
+        // Initialize available indices if there are at least two teachers
+        if (teachersData.length >= 2) {
+          const indices = Array.from({ length: teachersData.length }, (_, i) => i);
+          setAvailableIndices(shuffleArray(indices));
+        }
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -78,8 +80,8 @@ export default function Home() {
   };
 
   const handleRank = async (winnerIndex: number, loserIndex: number) => {
-    if (clickCount >= 10) {
-      return; // Stop ranking when click count exceeds the limit
+    if (clickCount >= 10 || teachers.length < 2) {
+      return; // Stop ranking if click limit is reached or insufficient teachers
     }
 
     const updatedTeachers = [...teachers];
@@ -138,13 +140,22 @@ export default function Home() {
     return <p>Error: {error}</p>;
   }
 
-  // Prepare the teachers to display
+  // Ensure there are at least two teachers before rendering
+  if (teachers.length < 2) {
+    return (
+      <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
+        <h1>Not enough teachers to display</h1>
+      </main>
+    );
+  }
+
+  // Prepare the teachers to display safely
   const teacher1 = teachers[teacherIndices[0]];
   const teacher2 = teachers[teacherIndices[1]];
-  
+
   const sortedTeachers = [...teachers].sort((a, b) => b.Score - a.Score);
 
-  if (clickCount === 10) {
+  if (clickCount === 8) {
     return (
       <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
         <h1>Welcome</h1>
@@ -156,7 +167,7 @@ export default function Home() {
 
   return (
     <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
-      <p className="text-xl sm:text-2xl text-center">Welcome from below 2 cards vote your fav teacher</p>
+      <p className="text-xl sm:text-2xl text-center">Vote your fav teacher  from belw 2 cards</p>
       <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10 - clickCount}</p>
 
       <Hero
