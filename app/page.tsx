@@ -1,8 +1,8 @@
-'use client';
-import { useEffect, useState } from "react";
+'use client'
+import { useState, useEffect } from 'react';
+import Image from 'next/image'; // Ensure you have this import if you're using Next.js
+import Hero from '@/app/component/hero'; // Adjust the path based on your project structure
 
-import Hero from "@/app/component/hero";
-import Image from "next/image";
 
 interface Teacher {
   _id: string;
@@ -12,10 +12,9 @@ interface Teacher {
 }
 
 export default function Home() {
-
-
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [teacherIndices, setTeacherIndices] = useState<[number, number]>([0, 1]);
+  const [availableIndices, setAvailableIndices] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +36,10 @@ export default function Home() {
         }
         const data = await response.json();
         setTeachers(data.data || []);
+        // Initialize available indices when teachers are fetched
+        const indices = Array.from({ length: data.data.length }, (_, i) => i);
+
+        setAvailableIndices(shuffleArray(indices));
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -52,6 +55,15 @@ export default function Home() {
       localStorage.setItem('clickCount', clickCount.toString());
     }
   }, [clickCount]);
+
+  // Function to shuffle the array
+  const shuffleArray = (array: number[]): number[] => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
 
   const calculateElo = (
     ratingA: number,
@@ -104,17 +116,19 @@ export default function Home() {
 
     // Update the teacher indices for the next pair
     setTeacherIndices((prevIndices) => {
-      const nextIndex1 = (prevIndices[1] + 1) % updatedTeachers.length;
-      const nextIndex2 = (nextIndex1 + 1) % updatedTeachers.length;
+      if (availableIndices.length < 2) {
+        // If fewer than two indices are left, reshuffle
+        const reshuffledIndices = shuffleArray(Array.from({ length: updatedTeachers.length }, (_, i) => i));
+
+        setAvailableIndices(reshuffledIndices);
+      }
+
+      // Get two unique random indices
+      const [nextIndex1, nextIndex2, ...remainingIndices] = availableIndices;
+      setAvailableIndices(remainingIndices);
       return [nextIndex1, nextIndex2];
     });
   };
-
-  const teacher1 = teachers[teacherIndices[0]] || {};
-  const teacher2 = teachers[teacherIndices[1]] || {};
-  const sortedTeachers = Array.isArray(teachers)
-    ? [...teachers].sort((a, b) => b.Score - a.Score)
-    : [];
 
   if (loading) {
     return <p>Loading...</p>;
@@ -124,11 +138,16 @@ export default function Home() {
     return <p>Error: {error}</p>;
   }
 
-  // Conditionally render based on clickCount
-  if (clickCount === 10) {
+  // Prepare the teachers to display
+  const teacher1 = teachers[teacherIndices[0]];
+  const teacher2 = teachers[teacherIndices[1]];
+  
+  const sortedTeachers = [...teachers].sort((a, b) => b.Score - a.Score);
+
+  if (clickCount === 90) {
     return (
       <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
-        <h1>Welcome </h1>
+        <h1>Welcome</h1>
         <Image src='/vote.png' width={300} height={500} alt='Vote' />
         <p>You have reached the maximum of 10 clicks this session!</p>
       </main>
@@ -137,17 +156,16 @@ export default function Home() {
 
   return (
     <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
-      <p className="text-xl sm:text-2xl text-center">Welcome,vote your favourite teacher from  below 2 cards.</p>
-      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10-clickCount}</p>
+      <p className="text-xl sm:text-2xl text-center">Welcome from below 2 cards vote your fav teacher</p>
+      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10 - clickCount}</p>
 
       <Hero
-      
         teacher1={teacher1}
         teacher2={teacher2}
         teacherIndices={teacherIndices}
         handleRank={handleRank}
-        voteCount={0} // Define or remove if not needed
-        maxVotes={10} // Define or remove if not needed
+        voteCount={clickCount}
+        maxVotes={10}
       />
 
       <table className="min-w-full bg-gray-800 text-white rounded-lg shadow-lg overflow-hidden">
