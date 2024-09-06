@@ -1,11 +1,11 @@
 "use client";
 
 import { FiUser } from "react-icons/fi";
-import { signIn } from "next-auth/react";
-import { Session } from "next-auth";
+
+
 
 interface HeroProps {
-  session: Session | null;
+
   teacher1: { name: string };
   teacher2: { name: string };
   teacherIndices: [number, number];
@@ -14,7 +14,7 @@ interface HeroProps {
   maxVotes: number;
 }
 
-const Hero: React.FC<HeroProps> = ({ session, teacher1, teacher2, teacherIndices, handleRank, voteCount, maxVotes }) => {
+const Hero: React.FC<HeroProps> = ({  teacher1, teacher2, teacherIndices, handleRank, voteCount, maxVotes }) => {
  
 
   return (
