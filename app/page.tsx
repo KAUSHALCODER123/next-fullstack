@@ -144,7 +144,7 @@ export default function Home() {
   
   const sortedTeachers = [...teachers].sort((a, b) => b.Score - a.Score);
 
-  if (clickCount === 90) {
+  if (clickCount === 10) {
     return (
       <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
         <h1>Welcome</h1>
