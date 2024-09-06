@@ -137,7 +137,7 @@ export default function Home() {
 
   return (
     <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
-      <p className="text-xl sm:text-2xl text-center">Welcome</p>
+      <p className="text-xl sm:text-2xl text-center">Welcome,vote your favourite teacher from  below 2 cards.</p>
       <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10-clickCount}</p>
 
       <Hero
