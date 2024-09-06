@@ -80,7 +80,7 @@ export default function Home() {
   };
 
   const handleRank = async (winnerIndex: number, loserIndex: number) => {
-    if (clickCount >= 10 || teachers.length < 2) {
+    if (clickCount >= 7 || teachers.length < 2) {
       return; // Stop ranking if click limit is reached or insufficient teachers
     }
 
@@ -155,12 +155,12 @@ export default function Home() {
 
   const sortedTeachers = [...teachers].sort((a, b) => b.Score - a.Score);
 
-  if (clickCount === 10) {
+  if (clickCount === 7) {
     return (
       <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
         <h1>Welcome</h1>
         <Image src='/vote.png' width={300} height={500} alt='Vote' />
-        <p>You have reached the maximum of 10 clicks this session!</p>
+        <p>You have reached the maximum of 7 clicks this session!</p>
       </main>
     );
   }
@@ -168,7 +168,7 @@ export default function Home() {
   return (
     <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
       <p className="text-xl sm:text-2xl text-center">Vote your fav teacher  from belw 2 cards</p>
-      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10 - clickCount}</p>
+      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {7 - clickCount}</p>
 
       <Hero
         teacher1={teacher1}
