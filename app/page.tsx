@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+
 import Hero from "@/app/component/hero";
 import Image from "next/image";
 
@@ -12,7 +12,7 @@ interface Teacher {
 }
 
 export default function Home() {
-  const { data: session, status } = useSession();
+
 
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [teacherIndices, setTeacherIndices] = useState<[number, number]>([0, 1]);
@@ -125,10 +125,10 @@ export default function Home() {
   }
 
   // Conditionally render based on clickCount
-  if (clickCount === 10) {
+  if (clickCount === 50) {
     return (
       <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
-        <h1>Welcome {session?.user?.name}</h1>
+        <h1>Welcome </h1>
         <Image src='/vote.png' width={300} height={500} alt='Vote' />
         <p>You have reached the maximum of 10 clicks this session!</p>
       </main>
@@ -137,11 +137,11 @@ export default function Home() {
 
   return (
     <main className="text-white flex min-h-screen flex-col items-center justify-between p-6 sm:p-10 bg-gradient-to-b from-gray-900 to-gray-700">
-      <p className="text-xl sm:text-2xl text-center">Welcome {session?.user?.email}</p>
-      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10 - clickCount}</p>
+      <p className="text-xl sm:text-2xl text-center">Welcome</p>
+      <p className="text-xl sm:text-2xl text-center">Vote Remaining: {10-clickCount}</p>
 
       <Hero
-        session={session}
+      
         teacher1={teacher1}
         teacher2={teacher2}
         teacherIndices={teacherIndices}
