@@ -15,20 +15,7 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ session, teacher1, teacher2, teacherIndices, handleRank, voteCount, maxVotes }) => {
-  if (!session) {
-    return (
-      <section className="flex flex-col items-center mb-12">
-        <button
-          className="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full mt-6 sm:mt-8 shadow-lg transform hover:scale-105 transition-transform duration-300"
-          onClick={() => signIn("google", { redirectTo: "/" })}
-        >
-          Sign In to Vote for Teachers!
-        </button>
-      </section>
-    );
-  } else {
-    console.log('Session Data:', session?.user);
-  }
+ 
 
   return (
     <section className="flex flex-col items-center mb-12">
